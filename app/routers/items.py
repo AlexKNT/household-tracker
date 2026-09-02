@@ -11,7 +11,15 @@ from pydantic import ValidationError
 from sqlalchemy.orm import Session
 
 from app.config import settings
-from app.crud import activate_item, create_item, get_item, list_items
+from app.crud import (
+    activate_item,
+    create_item,
+    decrement_item,
+    get_item,
+    increment_item,
+    list_items,
+    set_item_empty,
+)
 from app.db import get_db
 from app.routers.dashboard import build_dashboard_context
 from app.schemas import ItemActivate, ItemCreate
@@ -175,3 +183,48 @@ def activate_item_endpoint(
     # The form targets the modal; on success we swap the dashboard body.
     response.headers["HX-Retarget"] = "#dashboard-body"
     return response
+
+
+def _render_dashboard_body(request: Request, db: Session) -> HTMLResponse:
+    """Render the dashboard body fragment for a mutation response."""
+    return templates.TemplateResponse(
+        request=request,
+        name="partials/dashboard_body.html",
+        context=build_dashboard_context(list_items(db), date.today()),
+    )
+
+
+@router.post("/items/{item_id}/increment", response_class=HTMLResponse)
+def increment_item_endpoint(
+    request: Request, item_id: int, db: Session = Depends(get_db)
+) -> HTMLResponse:
+    """Add one to an item's quantity and return the dashboard body."""
+    item = get_item(db, item_id)
+    if item is None:
+        raise HTTPException(status_code=404, detail="Item not found.")
+    increment_item(db, item)
+    return _render_dashboard_body(request, db)
+
+
+@router.post("/items/{item_id}/decrement", response_class=HTMLResponse)
+def decrement_item_endpoint(
+    request: Request, item_id: int, db: Session = Depends(get_db)
+) -> HTMLResponse:
+    """Remove one from an item's quantity (clamped at 0) and return the dashboard body."""
+    item = get_item(db, item_id)
+    if item is None:
+        raise HTTPException(status_code=404, detail="Item not found.")
+    decrement_item(db, item)
+    return _render_dashboard_body(request, db)
+
+
+@router.post("/items/{item_id}/empty", response_class=HTMLResponse)
+def empty_item_endpoint(
+    request: Request, item_id: int, db: Session = Depends(get_db)
+) -> HTMLResponse:
+    """Set an item's quantity to zero and return the dashboard body."""
+    item = get_item(db, item_id)
+    if item is None:
+        raise HTTPException(status_code=404, detail="Item not found.")
+    set_item_empty(db, item)
+    return _render_dashboard_body(request, db)

@@ -5,9 +5,27 @@
     hx-swap="beforeend"
     {%- endif %}>
     <div class="row__controls">
+        {% if row.is_to_buy %}
         <button type="button" class="btn" disabled aria-label="Increment">+</button>
         <button type="button" class="btn" disabled aria-label="Decrement">−</button>
         <button type="button" class="btn" disabled aria-label="Set to zero">0</button>
+        {% else %}
+        <button type="button" class="btn"
+                hx-post="/items/{{ row.item.id }}/increment"
+                hx-target="#dashboard-body"
+                hx-swap="outerHTML"
+                aria-label="Increment">+</button>
+        <button type="button" class="btn"
+                hx-post="/items/{{ row.item.id }}/decrement"
+                hx-target="#dashboard-body"
+                hx-swap="outerHTML"
+                aria-label="Decrement">−</button>
+        <button type="button" class="btn"
+                hx-post="/items/{{ row.item.id }}/empty"
+                hx-target="#dashboard-body"
+                hx-swap="outerHTML"
+                aria-label="Set to zero">0</button>
+        {% endif %}
         <button type="button" class="btn" disabled aria-label="Restock">⟳</button>
     </div>
     <div class="row__main">

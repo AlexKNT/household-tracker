@@ -47,3 +47,27 @@ def activate_item(db: Session, item: Item, best_by_date: date | None) -> Item:
     db.commit()
     db.refresh(item)
     return item
+
+
+def increment_item(db: Session, item: Item) -> Item:
+    """Add one to the item's quantity and persist."""
+    item.quantity += 1
+    db.commit()
+    db.refresh(item)
+    return item
+
+
+def decrement_item(db: Session, item: Item) -> Item:
+    """Remove one from quantity, clamped at zero, and persist."""
+    item.quantity = max(0, item.quantity - 1)
+    db.commit()
+    db.refresh(item)
+    return item
+
+
+def set_item_empty(db: Session, item: Item) -> Item:
+    """Set the item's quantity to zero and persist."""
+    item.quantity = 0
+    db.commit()
+    db.refresh(item)
+    return item

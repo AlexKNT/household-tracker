@@ -9,7 +9,7 @@ change.
 
 ## Current Goal
 
-- Unit 08 — Quantity Controls
+- Unit 09 — Restock (⟳)
 
 ## Completed
 
@@ -39,6 +39,11 @@ change.
   rows opening `GET /items/{id}/activate`, and `POST /items/{id}/activate`
   converting a purchase to an active green item (`partials/activate_form.html`,
   `partials/activated.html`); 16 new tests pass (70 total).
+- Unit 08 — Quantity Controls: `POST /items/{id}/increment`,
+  `POST /items/{id}/decrement` (clamped at 0), and `POST /items/{id}/empty`
+  endpoints returning the dashboard body fragment; `+`/`-`/`0` buttons wired
+  in `row.html` (disabled on to-buy rows), out-of-stock rows re-sort to the
+  top; 8 new tests pass (78 total).
 
 ## In Progress
 
@@ -46,7 +51,7 @@ change.
 
 ## Next Up
 
-- Unit 08 — Quantity Controls (`context/spec/08-quantity-controls.md`)
+- Unit 09 — Restock (⟳) (`context/spec/09-restock.md`)
 
 ## Open Questions
 
@@ -64,6 +69,13 @@ change.
 
 ## Session Notes
 
+- Unit 08 complete: quantity-control endpoints return the dashboard body
+  fragment (`partials/dashboard_body.html`) so an emptied row immediately
+  re-sorts into the Out of stock section. `decrement_item` clamps at 0 via
+  `max(0, quantity - 1)`. `+`/`-`/`0` buttons are wired with
+  `hx-target="#dashboard-body" hx-swap="outerHTML"`; to-buy rows keep the
+  buttons disabled (quantity is hidden there and the row itself carries the
+  activate `hx-get`).
 - Unit 07 complete: `POST /items` accepts `is_to_buy` (checkbox value
   `"true"`), `ItemCreate` defaults a food to-buy's date to today while
   keeping the food-only rule, `build_dashboard_context` suppresses
