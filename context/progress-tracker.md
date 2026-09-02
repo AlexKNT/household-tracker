@@ -5,11 +5,11 @@ change.
 
 ## Current Phase
 
-- Build phase 3 — Write Path (units 06–10 complete)
+- Build phase 3 — Write Path (units 06–11 complete)
 
 ## Current Goal
 
-- Unit 10 — Comments
+- Unit 11 — Expiry Lifecycle
 
 ## Completed
 
@@ -55,6 +55,11 @@ change.
   `PATCH /items/{id}/comment` returns the rendered comment cell fragment
   (`partials/comment_cell.html`, `partials/comment_form.html`); `row.html`
   includes the cell for every row; 9 new tests pass (94 total).
+- Unit 11 — Expiry Lifecycle: lazy 7-day purge in `crud.list_items`
+  (deletes food rows `days_left <= -7`, never touches `quantity == 0`
+  rows); `services.is_expired`/`should_purge` derive expiry from
+  `best_by_date`; dashboard and item routers list through `list_items` so
+  every read purges; 5 new tests pass (99 total).
 
 ## In Progress
 
@@ -62,7 +67,7 @@ change.
 
 ## Next Up
 
-- Unit 11 — Expiry Lifecycle (`context/spec/11-expiry-lifecycle.md`)
+- Unit 12 — UI Polish & Responsive (`context/spec/12-ui-polish.md`)
 
 ## Open Questions
 
@@ -80,7 +85,16 @@ change.
 
 ## Session Notes
 
-- Unit 10 complete: the comment cell is a self-contained `row__comment`
+- Unit 11 complete: the 7-day purge runs lazily inside `crud.list_items`,
+  which now takes `today` and deletes food rows where `should_purge` is
+  true while skipping `quantity == 0` rows (out-of-stock is never
+  auto-deleted). `services.is_expired`/`should_purge` were already present
+  from Unit 03 and stay pure `days_left` predicates per spec; the quantity
+  guard lives at the delete site, not in the predicate. `GET /`,
+  `GET /dashboard/body`, and every item mutation re-render now list via
+  `list_items(db, date.today())`, so purged rows disappear on any read.
+  `tests/test_expiry.py` covers −1 visible, −7 purged, −6 survives,
+  out-of-stock never purged, and meds/household never purged (99 total).
   fragment rendered via `{% set item = row.item %}` + `{% include %}` so the
   same templates serve both the dashboard and the router's direct cell
   renders. The edit form saves via a `type="button"` with `hx-patch` +

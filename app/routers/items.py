@@ -125,7 +125,7 @@ def create_item_endpoint(
     response = templates.TemplateResponse(
         request=request,
         name="partials/items_created.html",
-        context=build_dashboard_context(list_items(db), date.today()),
+        context=build_dashboard_context(list_items(db, date.today()), date.today()),
     )
     # The form normally targets the modal; on success we swap the dashboard.
     response.headers["HX-Retarget"] = "#dashboard-body"
@@ -180,7 +180,7 @@ def activate_item_endpoint(
     response = templates.TemplateResponse(
         request=request,
         name="partials/activated.html",
-        context=build_dashboard_context(list_items(db), date.today()),
+        context=build_dashboard_context(list_items(db, date.today()), date.today()),
     )
     # The form targets the modal; on success we swap the dashboard body.
     response.headers["HX-Retarget"] = "#dashboard-body"
@@ -192,7 +192,7 @@ def _render_dashboard_body(request: Request, db: Session) -> HTMLResponse:
     return templates.TemplateResponse(
         request=request,
         name="partials/dashboard_body.html",
-        context=build_dashboard_context(list_items(db), date.today()),
+        context=build_dashboard_context(list_items(db, date.today()), date.today()),
     )
 
 

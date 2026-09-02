@@ -9,11 +9,30 @@ from sqlalchemy.orm import Session
 
 from app.models import Item
 from app.schemas import ItemCreate
+from app.services import should_purge
 
 
-def list_items(db: Session) -> list[Item]:
-    """Return every item in unspecified order (sorting lives in services)."""
-    return list(db.scalars(select(Item)))
+def list_items(db: Session, today: date) -> list[Item]:
+    """Return visible items, purging date-expired rows at read time.
+
+    Food rows a week past their best-by date are deleted here (lazy purge);
+    out-of-stock rows (`quantity == 0`) are never auto-deleted. Sorting
+    lives in `services.sort_key`.
+    """
+    items = list(db.scalars(select(Item)))
+    purge_ids = {
+        item.id
+        for item in items
+        if item.quantity != 0 and should_purge(item, today)
+    }
+    if purge_ids:
+        surviving = [item for item in items if item.id not in purge_ids]
+        for item in items:
+            if item.id in purge_ids:
+                db.delete(item)
+        db.commit()
+        return surviving
+    return items
 
 
 def create_item(db: Session, data: ItemCreate) -> Item:

@@ -3,12 +3,11 @@ from datetime import date
 from fastapi import APIRouter, Depends, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
-from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 from app.config import settings
+from app.crud import list_items
 from app.db import get_db
-from app.models import Item
 from app.services import Status, days_left, derive_status, sort_key, status_color
 
 router = APIRouter()
@@ -97,7 +96,7 @@ def build_dashboard_context(items: list[Item], today: date) -> dict:
 
 @router.get("/", response_class=HTMLResponse)
 def dashboard(request: Request, db: Session = Depends(get_db)) -> HTMLResponse:
-    items = list(db.scalars(select(Item)))
+    items = list_items(db, date.today())
     return templates.TemplateResponse(
         request=request,
         name="dashboard.html",
@@ -107,7 +106,7 @@ def dashboard(request: Request, db: Session = Depends(get_db)) -> HTMLResponse:
 
 @router.get("/dashboard/body", response_class=HTMLResponse)
 def dashboard_body(request: Request, db: Session = Depends(get_db)) -> HTMLResponse:
-    items = list(db.scalars(select(Item)))
+    items = list_items(db, date.today())
     return templates.TemplateResponse(
         request=request,
         name="partials/dashboard_body.html",
