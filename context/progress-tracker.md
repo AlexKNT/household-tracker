@@ -9,7 +9,7 @@ change.
 
 ## Current Goal
 
-- Unit 02 — DB Implementation
+- Unit 03 — Domain Services
 
 ## Completed
 
@@ -21,15 +21,17 @@ change.
   CSS reset, pytest harness; smoke test passes.
 - Unit 01 — DB Plan: `docs/schema.md` authored (columns, DDL, derived
   rules, migration strategy).
+- Unit 02 — DB Implementation: `db.py`, `models.py` (`Category` + `Item`),
+  create_all on startup; model tests pass.
 
-## In Progress
+##None — between units.
 
-- None — between units.
+- Unit 02 — DB Implementation (`context/spec/02-db-implementation.md`)
 
 ## Next Up
 
-- Unit 02 — DB Implementation (`context/spec/02-db-implementation.md`)
 - Unit 03 — Domain Services (`context/spec/03-domain-services.md`)
+- Unit 04 — Dashboard (`context/spec/04-dashboard.md`)
 
 ## Open Questions
 
@@ -47,6 +49,8 @@ change.
 
 ## Session Notes
 
+- Unit 02 complete: SQLAlchemy 2.0 engine + model live in `app/db.py` and
+  `app/models.py`; tables created idempotently on startup.
 - Unit 01 complete: schema plan lives in `docs/schema.md`; Unit 02
   implements it verbatim.
 - Unit 00 complete. Run the app with

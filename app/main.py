@@ -1,16 +1,18 @@
 from fastapi import FastAPI
 from fastapi.staticfiles import StaticFiles
 
+from app import models  # noqa: F401  # registers Item on Base.metadata
 from app.config import settings
+from app.db import Base, engine
 from app.routers import dashboard
 
 
 def create_app() -> FastAPI:
     app = FastAPI(title="Household Inventory Tracker")
 
-    # The SQLite file lives here; make sure the directory exists before
-    # anything touches the database.
+    # Ensure the data directory exists, then create tables (idempotent).
     settings.DB_PATH.parent.mkdir(parents=True, exist_ok=True)
+    Base.metadata.create_all(bind=engine)
 
     app.mount(
         "/static",
