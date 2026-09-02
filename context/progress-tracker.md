@@ -9,7 +9,7 @@ change.
 
 ## Current Goal
 
-- Unit 04 — Dashboard
+- Unit 05 — Notification Modal
 
 ## Completed
 
@@ -25,6 +25,8 @@ change.
   create_all on startup; model tests pass.
 - Unit 03 — Domain Services: `services.py` (status/color/sort/expiry);
   18 service tests pass.
+- Unit 04 — Dashboard: `GET /` + `/dashboard/body`, grouped/sorted/colored
+  rows with HTMX polling; 5 dashboard tests pass.
 
 ## In Progress
 
@@ -32,8 +34,8 @@ change.
 
 ## Next Up
 
-- Unit 04 — Dashboard (`context/spec/04-dashboard.md`)
 - Unit 05 — Notification Modal (`context/spec/05-notification-modal.md`)
+- Unit 06 — Add Item (`context/spec/06-add-item.md`)
 
 ## Open Questions
 
@@ -51,6 +53,8 @@ change.
 
 ## Session Notes
 
+- Unit 04 complete: dashboard renders via `dashboard.py` + `partials/`
+  (dashboard_body.html, row.html); polling every 10s.
 - Unit 03 complete: `app/services.py` is the single source of truth for
   status/color/sort/expiry; pure functions, 18 tests.
 - Unit 02 complete: SQLAlchemy 2.0 engine + model live in `app/db.py` and

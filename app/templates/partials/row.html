@@ -1,0 +1,27 @@
+<li class="row row--{{ row.color }}">
+    <div class="row__controls">
+        <button type="button" class="btn" disabled aria-label="Increment">+</button>
+        <button type="button" class="btn" disabled aria-label="Decrement">−</button>
+        <button type="button" class="btn" disabled aria-label="Set to zero">0</button>
+        <button type="button" class="btn" disabled aria-label="Restock">⟳</button>
+    </div>
+    <div class="row__main">
+        <span class="row__name">{{ row.item.name }}</span>
+        {% if row.is_to_buy %}
+        <span class="row__meta">to buy</span>
+        {% else %}
+        <span class="row__meta">{{ row.item.quantity }} left</span>
+        {% endif %}
+        {% if row.days_label %}
+        <span class="row__meta">{{ row.days_label }}</span>
+        <span class="row__meta">best by {{ row.item.best_by_date }}</span>
+        {% endif %}
+    </div>
+    <div class="row__comment">
+        {% if row.item.comment %}
+        {{ row.item.comment }}
+        {% else %}
+        <span class="row__muted">Add note</span>
+        {% endif %}
+    </div>
+</li>

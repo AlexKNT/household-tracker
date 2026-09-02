@@ -1,0 +1,20 @@
+<section id="dashboard-body"
+         class="dashboard__body"
+         hx-get="/dashboard/body"
+         hx-trigger="every {{ poll_interval_s }}s"
+         hx-swap="outerHTML">
+    {% for section in sections %}
+    <section class="category" data-category="{{ section.key }}">
+        <h2 class="category__title">{{ section.title }}</h2>
+        {% if section.rows %}
+        <ul class="category__rows">
+            {% for row in section.rows %}
+                {% include "partials/row.html" %}
+            {% endfor %}
+        </ul>
+        {% else %}
+        <p class="empty-state">No {{ section.title|lower }} items.</p>
+        {% endif %}
+    </section>
+    {% endfor %}
+</section>

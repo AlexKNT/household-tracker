@@ -6,9 +6,8 @@
 <main class="dashboard">
     <header class="dashboard__header">
         <h1>Household Inventory</h1>
+        <button class="btn btn--primary" type="button" disabled>Add item</button>
     </header>
-    <section class="dashboard__body">
-        <p class="empty-state">No items yet.</p>
-    </section>
+    {% include "partials/dashboard_body.html" %}
 </main>
 {% endblock %}
