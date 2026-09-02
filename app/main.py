@@ -4,7 +4,7 @@ from fastapi.staticfiles import StaticFiles
 from app import models  # noqa: F401  # registers Item on Base.metadata
 from app.config import settings
 from app.db import Base, engine
-from app.routers import dashboard
+from app.routers import dashboard, items
 
 
 def create_app() -> FastAPI:
@@ -20,6 +20,7 @@ def create_app() -> FastAPI:
         name="static",
     )
     app.include_router(dashboard.router)
+    app.include_router(items.router)
 
     return app
 

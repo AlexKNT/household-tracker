@@ -55,7 +55,7 @@ def _modal_group_key(status: Status) -> str | None:
     return None
 
 
-def _build_context(items: list[Item], today: date) -> dict:
+def build_dashboard_context(items: list[Item], today: date) -> dict:
     """Group and sort items into dashboard sections and the daily modal."""
     ordered = sorted(items, key=lambda i: sort_key(i, today))
 
@@ -101,7 +101,7 @@ def dashboard(request: Request, db: Session = Depends(get_db)) -> HTMLResponse:
     return templates.TemplateResponse(
         request=request,
         name="dashboard.html",
-        context=_build_context(items, date.today()),
+        context=build_dashboard_context(items, date.today()),
     )
 
 
@@ -111,7 +111,7 @@ def dashboard_body(request: Request, db: Session = Depends(get_db)) -> HTMLRespo
     return templates.TemplateResponse(
         request=request,
         name="partials/dashboard_body.html",
-        context=_build_context(items, date.today()),
+        context=build_dashboard_context(items, date.today()),
     )
 
 

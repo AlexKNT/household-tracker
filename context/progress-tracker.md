@@ -9,7 +9,7 @@ change.
 
 ## Current Goal
 
-- Unit 06 — Add Item
+- Unit 07 — To-Buy
 
 ## Completed
 
@@ -30,6 +30,10 @@ change.
 - Unit 05 — Notification Modal: `partials/notification_modal.html` (gone
   bad / eat soon / to-buy) rendered on full loads only; JS-free dismiss via
   `POST /modal/dismiss`; 6 modal tests pass.
+- Unit 06 — Add Item: `app/schemas.py` (`ItemCreate` with food-only
+  `best_by_date` rule), `app/crud.py`, `app/routers/items.py`
+  (`GET /items/new`, `GET /items/empty`, `POST /items`), add-item modal
+  fragment, `python-multipart` dependency; 15 new tests pass (54 total).
 
 ## In Progress
 
@@ -37,7 +41,6 @@ change.
 
 ## Next Up
 
-- Unit 06 — Add Item (`context/spec/06-add-item.md`)
 - Unit 07 — To-Buy (`context/spec/07-to-buy.md`)
 
 ## Open Questions
@@ -55,6 +58,15 @@ change.
 - Single user, single machine, no auth; remote sync deferred.
 
 ## Session Notes
+
+- Unit 06 complete: `POST /items` validates through `ItemCreate`
+  (Pydantic), creates via `crud.create_item`, and returns
+  `partials/items_created.html` (dashboard body + `hx-swap-oob="delete"`
+  for the modal) with an `HX-Retarget: #dashboard-body` header. The add
+  form re-renders via `GET /items/new` when the category changes so the
+  best-by field only shows for food. Validation errors re-render the modal
+  with inline messages; apostrophes avoided in messages (Jinja escapes `'`
+  to `&#39;`).
 
 - Unit 05 complete: notification modal renders on full page loads only
   (not the 10s polling fragment); groups are gone-bad / eat-soon / to-buy;

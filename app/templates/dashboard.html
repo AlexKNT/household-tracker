@@ -6,7 +6,10 @@
 <main class="dashboard">
     <header class="dashboard__header">
         <h1>Household Inventory</h1>
-        <button class="btn btn--primary" type="button" disabled>Add item</button>
+        <button class="btn btn--primary" type="button"
+                hx-get="/items/new"
+                hx-target="body"
+                hx-swap="beforeend">Add item</button>
     </header>
     {% include "partials/dashboard_body.html" %}
     {% include "partials/notification_modal.html" %}

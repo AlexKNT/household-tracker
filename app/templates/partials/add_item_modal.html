@@ -1,0 +1,86 @@
+<div id="add-item-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="add-item-modal-title">
+    <div class="modal">
+        <header class="modal__header">
+            <h2 class="modal__title" id="add-item-modal-title">Add item</h2>
+            <button type="button"
+                    class="modal__close"
+                    hx-get="/items/empty"
+                    hx-target="#add-item-modal"
+                    hx-swap="outerHTML"
+                    aria-label="Close">×</button>
+        </header>
+        <form id="add-item-form"
+              class="add-item-form"
+              hx-post="/items"
+              hx-target="#add-item-modal"
+              hx-swap="outerHTML">
+            {% if errors %}
+            <div class="form-errors" role="alert">
+                {% for message in errors.values() %}
+                <p class="form-error">{{ message }}</p>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            <div class="field">
+                <label class="field__label" for="add-item-category">Category</label>
+                <select class="field__input"
+                        id="add-item-category"
+                        name="category"
+                        required
+                        hx-get="/items/new"
+                        hx-target="#add-item-modal"
+                        hx-swap="outerHTML"
+                        hx-include="#add-item-form">
+                    <option value="" {% if not values.category %}selected{% endif %}>Choose…</option>
+                    <option value="meds" {% if values.category == "meds" %}selected{% endif %}>Meds</option>
+                    <option value="food" {% if values.category == "food" %}selected{% endif %}>Food</option>
+                    <option value="household" {% if values.category == "household" %}selected{% endif %}>Household</option>
+                </select>
+            </div>
+
+            <div class="field">
+                <label class="field__label" for="add-item-name">Name</label>
+                <input class="field__input"
+                       id="add-item-name"
+                       name="name"
+                       type="text"
+                       maxlength="80"
+                       required
+                       value="{{ values.name }}">
+            </div>
+
+            <div class="field">
+                <label class="field__label" for="add-item-quantity">Quantity</label>
+                <input class="field__input"
+                       id="add-item-quantity"
+                       name="quantity"
+                       type="number"
+                       min="0"
+                       step="1"
+                       value="{{ values.quantity }}">
+            </div>
+
+            {% if values.category == "food" %}
+            <div class="field">
+                <label class="field__label" for="add-item-best-by">Best by</label>
+                <input class="field__input"
+                       id="add-item-best-by"
+                       name="best_by_date"
+                       type="date"
+                       required
+                       value="{{ values.best_by_date }}">
+            </div>
+            {% endif %}
+
+            <footer class="modal__actions">
+                <button type="button"
+                        class="btn btn--secondary"
+                        hx-get="/items/empty"
+                        hx-target="#add-item-modal"
+                        hx-swap="outerHTML">Cancel</button>
+                <button type="submit" class="btn btn--primary">Save</button>
+            </footer>
+        </form>
+    </div>
+</div>

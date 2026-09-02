@@ -156,3 +156,131 @@ body {
   color: var(--text-muted);
   font-size: 0.875rem;
 }
+
+/* --- Dashboard shell (minimal; full layout arrives in Unit 12) --- */
+
+.dashboard {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.dashboard__header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 0.75rem 0;
+  background: var(--bg);
+}
+
+.dashboard__header h1 {
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+/* --- Buttons --- */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.btn:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.btn:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.btn--primary {
+  background: var(--accent);
+  color: var(--surface);
+}
+
+.btn--primary:hover:not(:disabled) {
+  background: var(--accent-hover);
+}
+
+.btn--secondary {
+  background: var(--surface);
+  border-color: var(--border);
+  color: var(--text);
+}
+
+.btn--secondary:hover {
+  background: var(--surface-alt);
+}
+
+/* --- Add-item form --- */
+
+.add-item-form {
+  padding: 1rem 1.25rem 1.25rem;
+}
+
+.field {
+  margin-bottom: 1rem;
+}
+
+.field__label {
+  display: block;
+  margin-bottom: 0.375rem;
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.field__input {
+  width: 100%;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  color: var(--text);
+  font: inherit;
+}
+
+.field__input:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.form-errors {
+  margin-bottom: 1rem;
+  padding: 0.75rem 1rem;
+  border: 1px solid var(--red-border);
+  border-radius: var(--radius-md);
+  background: var(--red-bg);
+}
+
+.form-error {
+  color: var(--red-text);
+  font-size: 0.875rem;
+}
+
+.form-error + .form-error {
+  margin-top: 0.25rem;
+}
+
+.modal__actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.5rem;
+  margin-top: 1.5rem;
+}
