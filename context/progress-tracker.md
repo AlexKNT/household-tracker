@@ -44,6 +44,11 @@ change.
   endpoints returning the dashboard body fragment; `+`/`-`/`0` buttons wired
   in `row.html` (disabled on to-buy rows), out-of-stock rows re-sort to the
   top; 8 new tests pass (78 total).
+- Unit 09 — Restock (⟳): `crud.restock_item` creates a purple to-buy
+  (same name/category, quantity 1, no best-by) without touching the source
+  row; `POST /items/{id}/restock` returns the dashboard body fragment; the
+  `⟳` button is wired next to `0` (disabled on to-buy rows); 7 new tests
+  pass (85 total).
 
 ## In Progress
 
@@ -51,7 +56,7 @@ change.
 
 ## Next Up
 
-- Unit 09 — Restock (⟳) (`context/spec/09-restock.md`)
+- Unit 10 — Comments (`context/spec/10-comments.md`)
 
 ## Open Questions
 
@@ -69,6 +74,13 @@ change.
 
 ## Session Notes
 
+- Unit 09 complete: `POST /items/{id}/restock` reads the source item via
+  `get_item`, calls `crud.restock_item`, and returns
+  `partials/dashboard_body.html` (no `HX-Retarget`; the `⟳` button targets
+  `#dashboard-body` with `outerHTML`). Restocked to-buys store
+  `best_by_date=None` even for food (they re-enter the activate flow to
+  collect a date on purchase). The `⟳` button stays disabled on to-buy rows
+  so it cannot double-fire the row's activate `hx-get` via click bubbling.
 - Unit 08 complete: quantity-control endpoints return the dashboard body
   fragment (`partials/dashboard_body.html`) so an emptied row immediately
   re-sorts into the Out of stock section. `decrement_item` clamps at 0 via

@@ -9,6 +9,7 @@
         <button type="button" class="btn" disabled aria-label="Increment">+</button>
         <button type="button" class="btn" disabled aria-label="Decrement">−</button>
         <button type="button" class="btn" disabled aria-label="Set to zero">0</button>
+        <button type="button" class="btn" disabled aria-label="Restock">⟳</button>
         {% else %}
         <button type="button" class="btn"
                 hx-post="/items/{{ row.item.id }}/increment"
@@ -25,8 +26,12 @@
                 hx-target="#dashboard-body"
                 hx-swap="outerHTML"
                 aria-label="Set to zero">0</button>
+        <button type="button" class="btn"
+                hx-post="/items/{{ row.item.id }}/restock"
+                hx-target="#dashboard-body"
+                hx-swap="outerHTML"
+                aria-label="Restock">⟳</button>
         {% endif %}
-        <button type="button" class="btn" disabled aria-label="Restock">⟳</button>
     </div>
     <div class="row__main">
         <span class="row__name">{{ row.item.name }}</span>

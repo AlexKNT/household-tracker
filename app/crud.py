@@ -71,3 +71,18 @@ def set_item_empty(db: Session, item: Item) -> Item:
     db.commit()
     db.refresh(item)
     return item
+
+
+def restock_item(db: Session, item: Item) -> Item:
+    """Create a to-buy reminder for the item and return the new row."""
+    to_buy = Item(
+        name=item.name,
+        category=item.category,
+        quantity=1,
+        best_by_date=None,
+        is_to_buy=True,
+    )
+    db.add(to_buy)
+    db.commit()
+    db.refresh(to_buy)
+    return to_buy

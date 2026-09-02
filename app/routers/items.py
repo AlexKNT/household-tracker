@@ -18,6 +18,7 @@ from app.crud import (
     get_item,
     increment_item,
     list_items,
+    restock_item,
     set_item_empty,
 )
 from app.db import get_db
@@ -227,4 +228,16 @@ def empty_item_endpoint(
     if item is None:
         raise HTTPException(status_code=404, detail="Item not found.")
     set_item_empty(db, item)
+    return _render_dashboard_body(request, db)
+
+
+@router.post("/items/{item_id}/restock", response_class=HTMLResponse)
+def restock_item_endpoint(
+    request: Request, item_id: int, db: Session = Depends(get_db)
+) -> HTMLResponse:
+    """Create a to-buy reminder for an item and return the dashboard body."""
+    item = get_item(db, item_id)
+    if item is None:
+        raise HTTPException(status_code=404, detail="Item not found.")
+    restock_item(db, item)
     return _render_dashboard_body(request, db)
