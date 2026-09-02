@@ -1,4 +1,9 @@
-<li class="row row--{{ row.color }}">
+<li class="row row--{{ row.color }}"
+    {%- if row.is_to_buy %}
+    hx-get="/items/{{ row.item.id }}/activate"
+    hx-target="body"
+    hx-swap="beforeend"
+    {%- endif %}>
     <div class="row__controls">
         <button type="button" class="btn" disabled aria-label="Increment">+</button>
         <button type="button" class="btn" disabled aria-label="Decrement">−</button>

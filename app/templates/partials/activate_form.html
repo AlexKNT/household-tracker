@@ -1,0 +1,49 @@
+<div id="activate-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="activate-modal-title">
+    <div class="modal">
+        <header class="modal__header">
+            <h2 class="modal__title" id="activate-modal-title">Buy "{{ item.name }}"?</h2>
+            <button type="button"
+                    class="modal__close"
+                    hx-get="/items/empty"
+                    hx-target="#activate-modal"
+                    hx-swap="outerHTML"
+                    aria-label="Close">×</button>
+        </header>
+        <form id="activate-form"
+              class="add-item-form"
+              hx-post="/items/{{ item.id }}/activate"
+              hx-target="#activate-modal"
+              hx-swap="outerHTML">
+            {% if errors %}
+            <div class="form-errors" role="alert">
+                {% for message in errors.values() %}
+                <p class="form-error">{{ message }}</p>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            {% if item.category.value == "food" %}
+            <div class="field">
+                <label class="field__label" for="activate-best-by">Best by</label>
+                <input class="field__input"
+                       id="activate-best-by"
+                       name="best_by_date"
+                       type="date"
+                       required
+                       value="{{ values.best_by_date }}">
+            </div>
+            {% else %}
+            <p class="activate-note">Move "{{ item.name }}" to your active list. No best-by date needed.</p>
+            {% endif %}
+
+            <footer class="modal__actions">
+                <button type="button"
+                        class="btn btn--secondary"
+                        hx-get="/items/empty"
+                        hx-target="#activate-modal"
+                        hx-swap="outerHTML">Cancel</button>
+                <button type="submit" class="btn btn--primary">Save</button>
+            </footer>
+        </form>
+    </div>
+</div>

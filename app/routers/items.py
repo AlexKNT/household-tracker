@@ -4,17 +4,17 @@ from __future__ import annotations
 
 from datetime import date
 
-from fastapi import APIRouter, Depends, Form, Request
+from fastapi import APIRouter, Depends, Form, HTTPException, Request
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 from pydantic import ValidationError
 from sqlalchemy.orm import Session
 
 from app.config import settings
-from app.crud import create_item, list_items
+from app.crud import activate_item, create_item, get_item, list_items
 from app.db import get_db
 from app.routers.dashboard import build_dashboard_context
-from app.schemas import ItemCreate
+from app.schemas import ItemActivate, ItemCreate
 
 router = APIRouter()
 
@@ -35,15 +35,21 @@ def _validation_errors(exc: ValidationError) -> dict[str, str]:
     return errors
 
 
+def _is_true(value: str) -> bool:
+    """Parse a checkbox/form truthy string."""
+    return value.strip().lower() in ("true", "on", "1", "yes")
+
+
 def _form_values(
-    name: str, category: str, quantity: str, best_by_date: str
-) -> dict[str, str]:
+    name: str, category: str, quantity: str, best_by_date: str, is_to_buy: str
+) -> dict[str, object]:
     """Values used to re-populate the form after a validation failure."""
     return {
         "name": name,
         "category": category,
         "quantity": quantity,
         "best_by_date": best_by_date,
+        "is_to_buy": _is_true(is_to_buy),
     }
 
 
@@ -54,6 +60,7 @@ def new_item_form(
     name: str = "",
     quantity: str = "1",
     best_by_date: str = "",
+    is_to_buy: str = "",
 ) -> HTMLResponse:
     """Return the add-item modal (used to open and to re-render it)."""
     return templates.TemplateResponse(
@@ -61,7 +68,7 @@ def new_item_form(
         name="partials/add_item_modal.html",
         context={
             "errors": {},
-            "values": _form_values(name, category, quantity, best_by_date),
+            "values": _form_values(name, category, quantity, best_by_date, is_to_buy),
         },
     )
 
@@ -79,6 +86,7 @@ def create_item_endpoint(
     category: str = Form(""),
     quantity: str = Form("1"),
     best_by_date: str = Form(""),
+    is_to_buy: str = Form(""),
     db: Session = Depends(get_db),
 ) -> HTMLResponse:
     """Validate the form, create the item, and return the updated dashboard."""
@@ -88,6 +96,7 @@ def create_item_endpoint(
             category=category,
             quantity=quantity,
             best_by_date=best_by_date or None,
+            is_to_buy=_is_true(is_to_buy),
         )
     except ValidationError as exc:
         return templates.TemplateResponse(
@@ -95,7 +104,9 @@ def create_item_endpoint(
             name="partials/add_item_modal.html",
             context={
                 "errors": _validation_errors(exc),
-                "values": _form_values(name, category, quantity, best_by_date),
+                "values": _form_values(
+                    name, category, quantity, best_by_date, is_to_buy
+                ),
             },
         )
 
@@ -107,5 +118,60 @@ def create_item_endpoint(
         context=build_dashboard_context(list_items(db), date.today()),
     )
     # The form normally targets the modal; on success we swap the dashboard.
+    response.headers["HX-Retarget"] = "#dashboard-body"
+    return response
+
+
+@router.get("/items/{item_id}/activate", response_class=HTMLResponse)
+def activate_form(
+    request: Request, item_id: int, db: Session = Depends(get_db)
+) -> HTMLResponse:
+    """Return the buy-to-activate modal for a to-buy item."""
+    item = get_item(db, item_id)
+    if item is None or not item.is_to_buy:
+        raise HTTPException(status_code=404, detail="To-buy item not found.")
+    return templates.TemplateResponse(
+        request=request,
+        name="partials/activate_form.html",
+        context={"item": item, "errors": {}, "values": {"best_by_date": ""}},
+    )
+
+
+@router.post("/items/{item_id}/activate", response_class=HTMLResponse)
+def activate_item_endpoint(
+    request: Request,
+    item_id: int,
+    best_by_date: str = Form(""),
+    db: Session = Depends(get_db),
+) -> HTMLResponse:
+    """Activate a to-buy item and return the updated dashboard body."""
+    item = get_item(db, item_id)
+    if item is None or not item.is_to_buy:
+        raise HTTPException(status_code=404, detail="To-buy item not found.")
+
+    try:
+        data = ItemActivate(
+            category=item.category,
+            best_by_date=best_by_date or None,
+        )
+    except ValidationError as exc:
+        return templates.TemplateResponse(
+            request=request,
+            name="partials/activate_form.html",
+            context={
+                "item": item,
+                "errors": _validation_errors(exc),
+                "values": {"best_by_date": best_by_date},
+            },
+        )
+
+    activate_item(db, item, data.best_by_date)
+
+    response = templates.TemplateResponse(
+        request=request,
+        name="partials/activated.html",
+        context=build_dashboard_context(list_items(db), date.today()),
+    )
+    # The form targets the modal; on success we swap the dashboard body.
     response.headers["HX-Retarget"] = "#dashboard-body"
     return response

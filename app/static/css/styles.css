@@ -284,3 +284,20 @@ body {
   gap: 0.5rem;
   margin-top: 1.5rem;
 }
+
+/* --- To-buy --- */
+
+.row--purple {
+  cursor: pointer;
+}
+
+.field--toggle {
+  margin-bottom: 1rem;
+}
+
+.field--toggle .field__label {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+}

@@ -55,3 +55,28 @@ def test_meds_reject_best_by_date() -> None:
 def test_household_reject_best_by_date() -> None:
     with pytest.raises(ValidationError, match="cannot have a best-by date"):
         ItemCreate(name="Soap", category=Category.HOUSEHOLD, best_by_date=date(2026, 9, 5))
+
+
+def test_to_buy_food_defaults_best_by_to_today() -> None:
+    item = ItemCreate(name="Apples", category=Category.FOOD, is_to_buy=True)
+    assert item.is_to_buy is True
+    assert item.best_by_date == date.today()
+    assert item.quantity == 1
+
+
+def test_to_buy_food_keeps_explicit_date() -> None:
+    best_by = date(2026, 9, 10)
+    item = ItemCreate(
+        name="Apples", category=Category.FOOD, is_to_buy=True, best_by_date=best_by
+    )
+    assert item.best_by_date == best_by
+
+
+def test_to_buy_med_rejects_best_by_date() -> None:
+    with pytest.raises(ValidationError, match="cannot have a best-by date"):
+        ItemCreate(
+            name="Ibuprofen",
+            category=Category.MEDS,
+            is_to_buy=True,
+            best_by_date=date(2026, 9, 5),
+        )

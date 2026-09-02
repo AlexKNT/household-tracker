@@ -9,7 +9,7 @@ change.
 
 ## Current Goal
 
-- Unit 07 — To-Buy
+- Unit 08 — Quantity Controls
 
 ## Completed
 
@@ -34,6 +34,11 @@ change.
   `best_by_date` rule), `app/crud.py`, `app/routers/items.py`
   (`GET /items/new`, `GET /items/empty`, `POST /items`), add-item modal
   fragment, `python-multipart` dependency; 15 new tests pass (54 total).
+- Unit 07 — To-Buy: `is_to_buy` toggle on the add form (hides
+  quantity/best-by), purple rows with the "to buy" label, clickable purple
+  rows opening `GET /items/{id}/activate`, and `POST /items/{id}/activate`
+  converting a purchase to an active green item (`partials/activate_form.html`,
+  `partials/activated.html`); 16 new tests pass (70 total).
 
 ## In Progress
 
@@ -41,7 +46,7 @@ change.
 
 ## Next Up
 
-- Unit 07 — To-Buy (`context/spec/07-to-buy.md`)
+- Unit 08 — Quantity Controls (`context/spec/08-quantity-controls.md`)
 
 ## Open Questions
 
@@ -59,6 +64,12 @@ change.
 
 ## Session Notes
 
+- Unit 07 complete: `POST /items` accepts `is_to_buy` (checkbox value
+  `"true"`), `ItemCreate` defaults a food to-buy's date to today while
+  keeping the food-only rule, `build_dashboard_context` suppresses
+  `days_label` for to-buy rows, and the activate endpoints 404 for
+  non-to-buy items. To-buy rows render purple with "to buy" and open the
+  buy-to-activate modal via an `hx-get` on the `<li>`.
 - Unit 06 complete: `POST /items` validates through `ItemCreate`
   (Pydantic), creates via `crud.create_item`, and returns
   `partials/items_created.html` (dashboard body + `hx-swap-oob="delete"`

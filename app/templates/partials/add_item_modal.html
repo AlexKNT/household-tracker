@@ -39,6 +39,22 @@
                 </select>
             </div>
 
+            <div class="field field--toggle">
+                <label class="field__label" for="add-item-is-to-buy">
+                    <input class="field__checkbox"
+                           id="add-item-is-to-buy"
+                           name="is_to_buy"
+                           type="checkbox"
+                           value="true"
+                           hx-get="/items/new"
+                           hx-target="#add-item-modal"
+                           hx-swap="outerHTML"
+                           hx-include="#add-item-form"
+                           {% if values.is_to_buy %}checked{% endif %}>
+                    This is a to-buy
+                </label>
+            </div>
+
             <div class="field">
                 <label class="field__label" for="add-item-name">Name</label>
                 <input class="field__input"
@@ -50,6 +66,7 @@
                        value="{{ values.name }}">
             </div>
 
+            {% if not values.is_to_buy %}
             <div class="field">
                 <label class="field__label" for="add-item-quantity">Quantity</label>
                 <input class="field__input"
@@ -60,8 +77,9 @@
                        step="1"
                        value="{{ values.quantity }}">
             </div>
+            {% endif %}
 
-            {% if values.category == "food" %}
+            {% if values.category == "food" and not values.is_to_buy %}
             <div class="field">
                 <label class="field__label" for="add-item-best-by">Best by</label>
                 <input class="field__input"

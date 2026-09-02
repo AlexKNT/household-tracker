@@ -71,7 +71,7 @@ def build_dashboard_context(items: list[Item], today: date) -> dict:
 
     for item in ordered:
         status = derive_status(item, today)
-        remaining = days_left(item, today)
+        remaining = days_left(item, today) if not item.is_to_buy else None
         color = status_color(status, remaining)
 
         section_key = "out" if status is Status.OUT_OF_STOCK else item.category.value
