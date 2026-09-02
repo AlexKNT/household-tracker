@@ -1,5 +1,7 @@
 from datetime import date, timedelta
 
+import pytest
+
 from app.models import Category, Item
 from app.services import (
     Status,
@@ -161,3 +163,91 @@ def test_non_food_never_expires_or_purges() -> None:
     med = make_item(category=Category.MEDS, best_by_date=TODAY - timedelta(days=100))
     assert is_expired(med, TODAY) is False
     assert should_purge(med, TODAY) is False
+
+
+# --- day boundaries (spec 13: −7, −1, 0, 1, 3, 4) ---
+
+
+@pytest.mark.parametrize(
+    ("offset", "expected"),
+    [
+        (-7, -7),
+        (-1, -1),
+        (0, 0),
+        (1, 1),
+        (3, 3),
+        (4, 4),
+    ],
+)
+def test_days_left_boundaries(offset: int, expected: int) -> None:
+    item = make_item(best_by_date=TODAY + timedelta(days=offset))
+    assert days_left(item, TODAY) == expected
+
+
+@pytest.mark.parametrize(
+    ("offset", "expected_status"),
+    [
+        (-7, Status.EXPIRED),
+        (-1, Status.EXPIRED),
+        (0, Status.EAT_SOON),
+        (1, Status.EAT_SOON),
+        (3, Status.EAT_SOON),
+        (4, Status.FINE),
+    ],
+)
+def test_derive_status_boundaries(offset: int, expected_status: Status) -> None:
+    item = make_item(best_by_date=TODAY + timedelta(days=offset))
+    assert derive_status(item, TODAY) is expected_status
+
+
+@pytest.mark.parametrize(
+    ("offset", "expired"),
+    [
+        (-7, True),
+        (-1, True),
+        (0, False),
+        (1, False),
+        (3, False),
+        (4, False),
+    ],
+)
+def test_is_expired_boundaries(offset: int, expired: bool) -> None:
+    item = make_item(best_by_date=TODAY + timedelta(days=offset))
+    assert is_expired(item, TODAY) is expired
+
+
+@pytest.mark.parametrize(
+    ("offset", "purge"),
+    [
+        (-8, True),
+        (-7, True),
+        (-6, False),
+        (-1, False),
+        (0, False),
+    ],
+)
+def test_should_purge_boundaries(offset: int, purge: bool) -> None:
+    item = make_item(best_by_date=TODAY + timedelta(days=offset))
+    assert should_purge(item, TODAY) is purge
+
+
+# --- color mapping ---
+
+
+@pytest.mark.parametrize(
+    ("status", "remaining", "expected_color"),
+    [
+        (Status.TO_BUY, None, "purple"),
+        (Status.OUT_OF_STOCK, None, "out"),
+        (Status.EXPIRED, -7, "red"),
+        (Status.EXPIRED, -1, "red"),
+        (Status.EAT_SOON, 0, "red"),
+        (Status.EAT_SOON, 1, "yellow"),
+        (Status.EAT_SOON, 3, "yellow"),
+        (Status.FINE, 4, "green"),
+    ],
+)
+def test_status_color_mapping(
+    status: Status, remaining: int | None, expected_color: str
+) -> None:
+    assert status_color(status, remaining) == expected_color

@@ -5,11 +5,11 @@ change.
 
 ## Current Phase
 
-- Build phase 4 — Visual Layer (units 06–12 complete)
+- Build complete — all 15 units (00–14) implemented and verified
 
 ## Current Goal
 
-- Unit 12 — UI Polish & Responsive
+- None — project complete
 
 ## Completed
 
@@ -73,24 +73,43 @@ change.
   (`dashboard.html` SVG `+` glyph, `row.html` control/meta classes) and an
   inline SVG favicon added to `base.html`. All 99 tests still pass; no
   browser console errors on a manual pass at desktop and mobile widths.
+- Unit 13 — Testing & Hardening: completed the test suite to the
+  spec's coverage targets. `tests/test_services.py` now covers every
+  status branch and day boundary (−7, −1, 0, 1, 3, 4) plus full color
+  mapping, sort order, and the purge window. `tests/test_models.py`
+  gained schema-nullability assertions (matching `docs/schema.md`),
+  category-enum values, insert defaults, and a full round-trip with
+  comment + to-buy. Added `tests/test_endpoints.py` (every mutation via
+  httpx: add, activate, increment/decrement/empty, restock, comment,
+  dismiss modal) and `tests/test_invariants.py` (one asserting test per
+  architecture invariant). 169 tests pass with no failures.
+- Unit 14 — Docs & Final Review: authored `README.md` at the project
+  root (description + ADHD context, stack table, setup for
+  Windows/macOS/Linux, `pytest`, feature tour), audited all seven
+  architecture invariants against code, verified all eight success
+  criteria in `project-overview.md`, and synced `code-standards.md`
+  (`hx-patch`) and `architecture.md` (static tree) with the
+  implementation. 169 tests pass.
 
 ## In Progress
 
-- None — between units.
+- None.
 
 ## Next Up
 
-- Unit 13 — Testing & Hardening (`context/spec/13-testing-hardening.md`)
+- None — project complete. Optional polish if reopened (see Open
+  Questions).
 
 ## Open Questions
 
 - Comment editor vs polling: the 10s dashboard poll replaces
   `#dashboard-body` while the inline comment editor is open, discarding
-  an in-progress note (observed in a Unit 12 browser pass). Candidate
-  fixes (pause polling while `.row__comment--editing` exists, or move the
-  editor out of the polled fragment) belong in Unit 13.
-- None blocking v1 otherwise. Deferred: remote sync, per-medication
-  schedules, Alembic migrations, data import/export.
+  an in-progress note (observed in a Unit 12 browser pass). Unit 14 was
+  docs-only per its spec, so this remains open and non-blocking for v1.
+  Candidate fixes (pause polling while `.row__comment--editing` exists, or
+  move the editor out of the polled fragment) still apply.
+- Deferred: remote sync, per-medication schedules, Alembic migrations,
+  data import/export.
 
 ## Architecture Decisions
 
@@ -103,6 +122,35 @@ change.
 
 ## Session Notes
 
+- Unit 14 complete: `README.md` authored at the project root (one-line
+  description + ADHD context, stack table with rationale pointing to
+  `context/architecture.md`, venv + `pip install -r requirements.txt` +
+  `uvicorn app.main:app --reload` setup for Windows/macOS/Linux, `pytest`
+  instructions, and a feature tour walking the full item lifecycle).
+  Invariants audit confirmed all seven `architecture.md` invariants hold:
+  1. Status derived never stored — `services.derive_status` (no status
+     column on `models.Item`); `dashboard.build_dashboard_context` derives.
+  2. `best_by_date` food-only — `schemas.ItemCreate._enforce_food_only` +
+     `ItemActivate._enforce_food_only`; `services.days_left` returns None
+     for meds/household.
+  3. Out-of-stock never auto-deleted — `crud.list_items` guards
+     `item.quantity != 0`; only `services.should_purge` (days <= −7)
+     deletes.
+  4. Sort order server-side — `services.CATEGORY_ORDER` + `_URGENCY` +
+     `sort_key`; `dashboard.build_dashboard_context` sorts.
+  5. No background jobs — no scheduler dependencies; time logic runs
+     lazily in handlers via `date.today()`; HTMX polling is client-side.
+  6. Routers render fragments — every endpoint uses
+     `response_class=HTMLResponse` / `TemplateResponse`; no JSON responses.
+  7. Business rules in `services.py` — `derive_status`/`status_color`/
+     `sort_key`/`days_left`/`is_expired`/`should_purge`; routers/templates
+     call them and re-implement nothing (the purge's `quantity != 0` guard
+     sits at the delete site in `crud.list_items` as documented, outside
+     status/color/sort logic).
+  All eight `project-overview.md` success criteria are demonstrably true.
+  Docs sync: fixed `code-standards.md` (`hx-put` → `hx-patch` to match the
+  PATCH comment endpoint) and `architecture.md` (static tree now lists
+  `js/htmx.min.js`). `pytest` passes: 169 tests, 0 failures.
 - Unit 12 complete: `styles.css` rewritten as the full visual layer.
   Every hex value lives on `:root` (verified by grep); the only animation
   is `flash` on `.row--out` plus a `prefers-reduced-motion` override.
@@ -177,4 +225,9 @@ change.
   `.venv\Scripts\python.exe -m uvicorn app.main:app --reload`
   (deps live in the venv; the system Python has none of them).
 - Minor: starlette 1.6.0 emits a deprecation warning about `httpx` in
-  TestClient (suggests `httpx2`). Harmless for now; revisit in Unit 13.
+  TestClient (suggests `httpx2`). Still present at Unit 13; harmless.
+- Unit 13 complete: test suite expanded per spec — `test_services.py`
+  day-boundary/color/purge parameterization, `test_models.py`
+  nullability + defaults + round-trip, new `test_endpoints.py` (all
+  mutations via httpx) and new `test_invariants.py` (one test per
+  invariant 1–7). 169 tests pass, 0 failures.

@@ -38,7 +38,8 @@ household-tracker/
 │   │   ├── dashboard.html # Full-page layout
 │   │   └── partials/      # HTMX fragments: row, modal, add form
 │   └── static/
-│       └── css/styles.css # All styling, incl. flash animation
+│       ├── css/styles.css # All styling, incl. flash animation
+│       └── js/htmx.min.js # Vendored HTMX (single file, no build step)
 ├── tests/                 # pytest tests mirroring app/ structure
 ├── data/                  # SQLite file (gitignored)
 ├── requirements.txt

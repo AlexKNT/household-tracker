@@ -78,8 +78,8 @@ class Status(StrEnum):
   add form, dashboard body.
 - Use `hx-post`/`hx-target`/`hx-swap` precisely; no full page reloads on
   actions, and no JavaScript beyond HTMX attributes.
-- Inline editing (comment cell) uses HTMX's `hx-trigger` + `hx-put` pattern,
-  not a separate JS framework.
+- Inline editing (comment cell) uses HTMX's `hx-trigger` + `hx-patch`
+  pattern, not a separate JS framework.
 
 ## CSS
 
