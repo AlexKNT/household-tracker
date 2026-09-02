@@ -6,27 +6,27 @@
     {%- endif %}>
     <div class="row__controls">
         {% if row.is_to_buy %}
-        <button type="button" class="btn" disabled aria-label="Increment">+</button>
-        <button type="button" class="btn" disabled aria-label="Decrement">−</button>
-        <button type="button" class="btn" disabled aria-label="Set to zero">0</button>
-        <button type="button" class="btn" disabled aria-label="Restock">⟳</button>
+        <button type="button" class="btn btn--ctl" disabled aria-label="Increment">+</button>
+        <button type="button" class="btn btn--ctl" disabled aria-label="Decrement">−</button>
+        <button type="button" class="btn btn--ctl" disabled aria-label="Set to zero">0</button>
+        <button type="button" class="btn btn--ctl" disabled aria-label="Restock">⟳</button>
         {% else %}
-        <button type="button" class="btn"
+        <button type="button" class="btn btn--ctl"
                 hx-post="/items/{{ row.item.id }}/increment"
                 hx-target="#dashboard-body"
                 hx-swap="outerHTML"
                 aria-label="Increment">+</button>
-        <button type="button" class="btn"
+        <button type="button" class="btn btn--ctl"
                 hx-post="/items/{{ row.item.id }}/decrement"
                 hx-target="#dashboard-body"
                 hx-swap="outerHTML"
                 aria-label="Decrement">−</button>
-        <button type="button" class="btn"
+        <button type="button" class="btn btn--ctl"
                 hx-post="/items/{{ row.item.id }}/empty"
                 hx-target="#dashboard-body"
                 hx-swap="outerHTML"
                 aria-label="Set to zero">0</button>
-        <button type="button" class="btn"
+        <button type="button" class="btn btn--ctl"
                 hx-post="/items/{{ row.item.id }}/restock"
                 hx-target="#dashboard-body"
                 hx-swap="outerHTML"
@@ -35,15 +35,17 @@
     </div>
     <div class="row__main">
         <span class="row__name">{{ row.item.name }}</span>
-        {% if row.is_to_buy %}
-        <span class="row__meta">to buy</span>
-        {% else %}
-        <span class="row__meta">{{ row.item.quantity }} left</span>
-        {% endif %}
-        {% if row.days_label %}
-        <span class="row__meta">{{ row.days_label }}</span>
-        <span class="row__meta">best by {{ row.item.best_by_date }}</span>
-        {% endif %}
+        <span class="row__meta">
+            {% if row.is_to_buy %}
+            <span class="row__badge">to buy</span>
+            {% else %}
+            <span class="row__badge">{{ row.item.quantity }} left</span>
+            {% endif %}
+            {% if row.days_label %}
+            <span class="row__days">{{ row.days_label }}</span>
+            <span class="row__date">best by {{ row.item.best_by_date }}</span>
+            {% endif %}
+        </span>
     </div>
     {% set item = row.item %}
     {% include "partials/comment_cell.html" %}

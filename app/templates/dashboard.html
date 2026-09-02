@@ -5,11 +5,16 @@
 {% block content %}
 <main class="dashboard">
     <header class="dashboard__header">
-        <h1>Household Inventory</h1>
+        <h1 class="dashboard__title">Household Inventory</h1>
         <button class="btn btn--primary" type="button"
                 hx-get="/items/new"
                 hx-target="body"
-                hx-swap="beforeend">Add item</button>
+                hx-swap="beforeend">
+            <svg class="btn__glyph" aria-hidden="true" width="16" height="16" viewBox="0 0 16 16" fill="none">
+                <path d="M8 3v10M3 8h10" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            Add item
+        </button>
     </header>
     {% include "partials/dashboard_body.html" %}
     {% include "partials/notification_modal.html" %}

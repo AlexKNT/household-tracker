@@ -5,11 +5,11 @@ change.
 
 ## Current Phase
 
-- Build phase 3 — Write Path (units 06–11 complete)
+- Build phase 4 — Visual Layer (units 06–12 complete)
 
 ## Current Goal
 
-- Unit 11 — Expiry Lifecycle
+- Unit 12 — UI Polish & Responsive
 
 ## Completed
 
@@ -60,6 +60,19 @@ change.
   rows); `services.is_expired`/`should_purge` derive expiry from
   `best_by_date`; dashboard and item routers list through `list_items` so
   every read purges; 5 new tests pass (99 total).
+- Unit 12 — UI Polish & Responsive: full visual layer from
+  `ui-context.md` in `app/static/css/styles.css` — `:root` tokens
+  (neutrals, status triples, out-of-stock, actions, radii), sticky header
+  with the Add button, category sections, status rows (background / left
+  border / name text triples), the 2×3 control cluster (`+`/`−` stacked,
+  `0` below, `⟳` right of `0`), quantity badge + days/date meta, comment
+  cell, modal cards with sticky headers, empty states, global
+  `focus-visible` rings, and a 640px breakpoint that stacks controls and
+  meta. The only animation is `@keyframes flash` on `.row--out` (with a
+  `prefers-reduced-motion` opt-out). Templates cleaned up
+  (`dashboard.html` SVG `+` glyph, `row.html` control/meta classes) and an
+  inline SVG favicon added to `base.html`. All 99 tests still pass; no
+  browser console errors on a manual pass at desktop and mobile widths.
 
 ## In Progress
 
@@ -67,12 +80,17 @@ change.
 
 ## Next Up
 
-- Unit 12 — UI Polish & Responsive (`context/spec/12-ui-polish.md`)
+- Unit 13 — Testing & Hardening (`context/spec/13-testing-hardening.md`)
 
 ## Open Questions
 
-- None blocking v1. Deferred: remote sync, per-medication schedules,
-  Alembic migrations, data import/export.
+- Comment editor vs polling: the 10s dashboard poll replaces
+  `#dashboard-body` while the inline comment editor is open, discarding
+  an in-progress note (observed in a Unit 12 browser pass). Candidate
+  fixes (pause polling while `.row__comment--editing` exists, or move the
+  editor out of the polled fragment) belong in Unit 13.
+- None blocking v1 otherwise. Deferred: remote sync, per-medication
+  schedules, Alembic migrations, data import/export.
 
 ## Architecture Decisions
 
@@ -85,6 +103,19 @@ change.
 
 ## Session Notes
 
+- Unit 12 complete: `styles.css` rewritten as the full visual layer.
+  Every hex value lives on `:root` (verified by grep); the only animation
+  is `flash` on `.row--out` plus a `prefers-reduced-motion` override.
+  `--backdrop`, `--shadow`, and `--shadow-header` are token-level derived
+  values (rgba) added to `:root` so no raw colors appear in component
+  rules. `row.html` controls now use `btn--ctl` placed with
+  `grid-template-areas` (literal ui-context layout: `+`/`−` stacked, `0`
+  below, `⟳` right of `0`), and meta renders as a badge + days + date.
+  `base.html` gained a data-URI SVG favicon so the browser no longer 404s
+  `/favicon.ico`. Verified in a live browser at 390px and 1280px:
+  sticky header, status triples, modals, comment edit/save, activate
+  modal, quantity controls, flash animation (`flash / 1.4s / infinite`),
+  and zero console errors on a clean load.
 - Unit 11 complete: the 7-day purge runs lazily inside `crud.list_items`,
   which now takes `today` and deletes food rows where `should_purge` is
   true while skipping `quantity == 0` rows (out-of-stock is never
