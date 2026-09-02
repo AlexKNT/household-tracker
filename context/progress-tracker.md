@@ -5,11 +5,11 @@ change.
 
 ## Current Phase
 
-- Build phase 3 — Write Path (implementing units 06–10 in order)
+- Build phase 3 — Write Path (units 06–10 complete)
 
 ## Current Goal
 
-- Unit 09 — Restock (⟳)
+- Unit 10 — Comments
 
 ## Completed
 
@@ -49,6 +49,12 @@ change.
   row; `POST /items/{id}/restock` returns the dashboard body fragment; the
   `⟳` button is wired next to `0` (disabled on to-buy rows); 7 new tests
   pass (85 total).
+- Unit 10 — Comments: `crud.set_item_comment` persists a free-text note
+  (`CommentUpdate` strips whitespace and maps empty back to `None`);
+  `GET /items/{id}/comment/edit` returns the inline editor and
+  `PATCH /items/{id}/comment` returns the rendered comment cell fragment
+  (`partials/comment_cell.html`, `partials/comment_form.html`); `row.html`
+  includes the cell for every row; 9 new tests pass (94 total).
 
 ## In Progress
 
@@ -56,7 +62,7 @@ change.
 
 ## Next Up
 
-- Unit 10 — Comments (`context/spec/10-comments.md`)
+- Unit 11 — Expiry Lifecycle (`context/spec/11-expiry-lifecycle.md`)
 
 ## Open Questions
 
@@ -74,6 +80,14 @@ change.
 
 ## Session Notes
 
+- Unit 10 complete: the comment cell is a self-contained `row__comment`
+  fragment rendered via `{% set item = row.item %}` + `{% include %}` so the
+  same templates serve both the dashboard and the router's direct cell
+  renders. The edit form saves via a `type="button"` with `hx-patch` +
+  `hx-include="#comment-input-{id}"`; both the read cell and the Save button
+  use `hx-trigger="click consume"` so clicks never bubble into a to-buy
+  row's `hx-get` activate handler. `PATCH` returns only the cell fragment
+  (no `HX-Retarget`), swapped in with `hx-swap="outerHTML"`.
 - Unit 09 complete: `POST /items/{id}/restock` reads the source item via
   `get_item`, calls `crud.restock_item`, and returns
   `partials/dashboard_body.html` (no `HX-Retarget`; the `⟳` button targets

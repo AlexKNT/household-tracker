@@ -19,11 +19,12 @@ from app.crud import (
     increment_item,
     list_items,
     restock_item,
+    set_item_comment,
     set_item_empty,
 )
 from app.db import get_db
 from app.routers.dashboard import build_dashboard_context
-from app.schemas import ItemActivate, ItemCreate
+from app.schemas import CommentUpdate, ItemActivate, ItemCreate
 
 router = APIRouter()
 
@@ -241,3 +242,47 @@ def restock_item_endpoint(
         raise HTTPException(status_code=404, detail="Item not found.")
     restock_item(db, item)
     return _render_dashboard_body(request, db)
+
+
+@router.get("/items/{item_id}/comment/edit", response_class=HTMLResponse)
+def comment_form(
+    request: Request, item_id: int, db: Session = Depends(get_db)
+) -> HTMLResponse:
+    """Return the inline comment editor for an item."""
+    item = get_item(db, item_id)
+    if item is None:
+        raise HTTPException(status_code=404, detail="Item not found.")
+    return templates.TemplateResponse(
+        request=request,
+        name="partials/comment_form.html",
+        context={"item": item, "errors": {}},
+    )
+
+
+@router.patch("/items/{item_id}/comment", response_class=HTMLResponse)
+def save_comment(
+    request: Request,
+    item_id: int,
+    comment: str = Form(""),
+    db: Session = Depends(get_db),
+) -> HTMLResponse:
+    """Save an item's comment and return the rendered comment cell."""
+    item = get_item(db, item_id)
+    if item is None:
+        raise HTTPException(status_code=404, detail="Item not found.")
+
+    try:
+        data = CommentUpdate(comment=comment)
+    except ValidationError as exc:
+        return templates.TemplateResponse(
+            request=request,
+            name="partials/comment_form.html",
+            context={"item": item, "errors": _validation_errors(exc)},
+        )
+
+    set_item_comment(db, item, data.comment)
+    return templates.TemplateResponse(
+        request=request,
+        name="partials/comment_cell.html",
+        context={"item": item},
+    )

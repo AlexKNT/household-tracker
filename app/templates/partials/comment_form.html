@@ -1,0 +1,25 @@
+<div class="row__comment row__comment--editing">
+    {% if errors %}
+    <div class="form-errors" role="alert">
+        {% for message in errors.values() %}
+        <p class="form-error">{{ message }}</p>
+        {% endfor %}
+    </div>
+    {% endif %}
+    <input id="comment-input-{{ item.id }}"
+           class="row__comment-input"
+           name="comment"
+           type="text"
+           autocomplete="off"
+           value="{{ item.comment or '' }}"
+           placeholder="Add a note…"
+           aria-label="Note for {{ item.name }}">
+    <button type="button"
+            class="btn btn--comment-save"
+            hx-patch="/items/{{ item.id }}/comment"
+            hx-include="#comment-input-{{ item.id }}"
+            hx-target="closest .row__comment"
+            hx-swap="outerHTML"
+            hx-trigger="click consume"
+            aria-label="Save note">Save</button>
+</div>

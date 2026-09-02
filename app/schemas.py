@@ -70,3 +70,22 @@ class ItemActivate(BaseModel):
         elif self.best_by_date is not None:
             raise ValueError("Meds and household items cannot have a best-by date.")
         return self
+
+
+class CommentUpdate(BaseModel):
+    """Validated input for saving an inline comment.
+
+    Comments are free text. Leading/trailing whitespace is stripped and an
+    all-whitespace value is stored as `None` (back to the empty "Add note"
+    state).
+    """
+
+    comment: str | None = None
+
+    @field_validator("comment", mode="before")
+    @classmethod
+    def _normalize_comment(cls, value: object) -> str | None:
+        if value is None:
+            return None
+        text = str(value).strip()
+        return text or None

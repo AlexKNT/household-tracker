@@ -86,3 +86,11 @@ def restock_item(db: Session, item: Item) -> Item:
     db.commit()
     db.refresh(to_buy)
     return to_buy
+
+
+def set_item_comment(db: Session, item: Item, comment: str | None) -> Item:
+    """Replace the item's comment (`None` clears it) and persist."""
+    item.comment = comment
+    db.commit()
+    db.refresh(item)
+    return item

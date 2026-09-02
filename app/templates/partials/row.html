@@ -45,11 +45,6 @@
         <span class="row__meta">best by {{ row.item.best_by_date }}</span>
         {% endif %}
     </div>
-    <div class="row__comment">
-        {% if row.item.comment %}
-        {{ row.item.comment }}
-        {% else %}
-        <span class="row__muted">Add note</span>
-        {% endif %}
-    </div>
+    {% set item = row.item %}
+    {% include "partials/comment_cell.html" %}
 </li>

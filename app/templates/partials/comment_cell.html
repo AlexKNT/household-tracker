@@ -1,0 +1,15 @@
+<div class="row__comment">
+    <button type="button"
+            class="row__comment-toggle"
+            hx-get="/items/{{ item.id }}/comment/edit"
+            hx-target="closest .row__comment"
+            hx-swap="outerHTML"
+            hx-trigger="click consume"
+            aria-label="Edit note for {{ item.name }}">
+        {% if item.comment %}
+        <span class="row__comment-text">{{ item.comment }}</span>
+        {% else %}
+        <span class="row__comment-text row__muted">Add note</span>
+        {% endif %}
+    </button>
+</div>
