@@ -9,7 +9,7 @@ change.
 
 ## Current Goal
 
-- Unit 01 — DB Plan
+- Unit 02 — DB Implementation
 
 ## Completed
 
@@ -19,14 +19,15 @@ change.
 - Build plan (`context/spec/00-build-plan.md`) and all 15 unit specs authored.
 - Unit 00 — Project Scaffold: `app/` skeleton, templates, vendored HTMX,
   CSS reset, pytest harness; smoke test passes.
+- Unit 01 — DB Plan: `docs/schema.md` authored (columns, DDL, derived
+  rules, migration strategy).
 
-##None — between units.
+## In Progress
 
-- Unit 00 — Project Scaffold (`context/spec/00-project-scaffold.md`)
+- None — between units.
 
 ## Next Up
 
-- Unit 01 — DB Plan (`context/spec/01-db-plan.md`)
 - Unit 02 — DB Implementation (`context/spec/02-db-implementation.md`)
 - Unit 03 — Domain Services (`context/spec/03-domain-services.md`)
 
@@ -46,6 +47,8 @@ change.
 
 ## Session Notes
 
+- Unit 01 complete: schema plan lives in `docs/schema.md`; Unit 02
+  implements it verbatim.
 - Unit 00 complete. Run the app with
   `.venv\Scripts\python.exe -m uvicorn app.main:app --reload`
   (deps live in the venv; the system Python has none of them).
