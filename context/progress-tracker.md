@@ -9,7 +9,7 @@ change.
 
 ## Current Goal
 
-- Unit 03 — Domain Services
+- Unit 04 — Dashboard
 
 ## Completed
 
@@ -23,15 +23,17 @@ change.
   rules, migration strategy).
 - Unit 02 — DB Implementation: `db.py`, `models.py` (`Category` + `Item`),
   create_all on startup; model tests pass.
+- Unit 03 — Domain Services: `services.py` (status/color/sort/expiry);
+  18 service tests pass.
 
-##None — between units.
+## In Progress
 
-- Unit 02 — DB Implementation (`context/spec/02-db-implementation.md`)
+- None — between units.
 
 ## Next Up
 
-- Unit 03 — Domain Services (`context/spec/03-domain-services.md`)
 - Unit 04 — Dashboard (`context/spec/04-dashboard.md`)
+- Unit 05 — Notification Modal (`context/spec/05-notification-modal.md`)
 
 ## Open Questions
 
@@ -49,6 +51,8 @@ change.
 
 ## Session Notes
 
+- Unit 03 complete: `app/services.py` is the single source of truth for
+  status/color/sort/expiry; pure functions, 18 tests.
 - Unit 02 complete: SQLAlchemy 2.0 engine + model live in `app/db.py` and
   `app/models.py`; tables created idempotently on startup.
 - Unit 01 complete: schema plan lives in `docs/schema.md`; Unit 02
