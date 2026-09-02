@@ -1,0 +1,30 @@
+<div id="notification-modal" class="modal-overlay" role="dialog" aria-modal="true" aria-labelledby="notification-modal-title">
+    <div class="modal">
+        <header class="modal__header">
+            <h2 class="modal__title" id="notification-modal-title">Needs attention</h2>
+            <button type="button"
+                    class="modal__close"
+                    hx-post="/modal/dismiss"
+                    hx-target="#notification-modal"
+                    hx-swap="outerHTML"
+                    aria-label="Dismiss">×</button>
+        </header>
+        <div class="modal__body">
+            {% for group in modal_groups %}
+            <section class="modal-group" data-modal-group="{{ group.key }}">
+                <h3 class="modal-group__title">{{ group.title }}</h3>
+                {% if group["items"] %}
+                <ul class="modal-group__list">
+                    {% for entry in group["items"] %}
+                    <li class="modal-group__item modal-group__item--{{ entry.color }}">{{ entry.name }}</li>
+                    {% endfor %}
+                </ul>
+                {% else %}
+                <p class="modal-group__empty">Nothing here.</p>
+                {% endif %}
+            </section>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+<!-- /notification-modal -->

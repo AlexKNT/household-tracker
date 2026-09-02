@@ -5,11 +5,11 @@ change.
 
 ## Current Phase
 
-- Build phase 0 — Foundation (implementing the units in order)
+- Build phase 3 — Write Path (implementing units 06–10 in order)
 
 ## Current Goal
 
-- Unit 05 — Notification Modal
+- Unit 06 — Add Item
 
 ## Completed
 
@@ -27,6 +27,9 @@ change.
   18 service tests pass.
 - Unit 04 — Dashboard: `GET /` + `/dashboard/body`, grouped/sorted/colored
   rows with HTMX polling; 5 dashboard tests pass.
+- Unit 05 — Notification Modal: `partials/notification_modal.html` (gone
+  bad / eat soon / to-buy) rendered on full loads only; JS-free dismiss via
+  `POST /modal/dismiss`; 6 modal tests pass.
 
 ## In Progress
 
@@ -34,8 +37,8 @@ change.
 
 ## Next Up
 
-- Unit 05 — Notification Modal (`context/spec/05-notification-modal.md`)
 - Unit 06 — Add Item (`context/spec/06-add-item.md`)
+- Unit 07 — To-Buy (`context/spec/07-to-buy.md`)
 
 ## Open Questions
 
@@ -53,6 +56,9 @@ change.
 
 ## Session Notes
 
+- Unit 05 complete: notification modal renders on full page loads only
+  (not the 10s polling fragment); groups are gone-bad / eat-soon / to-buy;
+  dismiss posts to `/modal/dismiss` returning an empty fragment.
 - Unit 04 complete: dashboard renders via `dashboard.py` + `partials/`
   (dashboard_body.html, row.html); polling every 10s.
 - Unit 03 complete: `app/services.py` is the single source of truth for

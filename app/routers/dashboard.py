@@ -23,6 +23,13 @@ _SECTIONS: list[tuple[str, str]] = [
     ("household", "Household"),
 ]
 
+# Daily notification modal group order.
+_MODAL_GROUPS: list[tuple[str, str]] = [
+    ("gone_bad", "Gone bad"),
+    ("eat_soon", "Eat soon"),
+    ("to_buy", "To-buy"),
+]
+
 
 def _days_label(remaining: int | None) -> str | None:
     """Human-readable countdown for the row's meta line."""
@@ -37,28 +44,53 @@ def _days_label(remaining: int | None) -> str | None:
     return f"{remaining} days left"
 
 
+def _modal_group_key(status: Status) -> str | None:
+    """Map a status to its daily-modal group, or None when excluded."""
+    if status is Status.EXPIRED:
+        return "gone_bad"
+    if status is Status.EAT_SOON:
+        return "eat_soon"
+    if status is Status.TO_BUY:
+        return "to_buy"
+    return None
+
+
 def _build_context(items: list[Item], today: date) -> dict:
-    """Group and sort items into dashboard sections."""
+    """Group and sort items into dashboard sections and the daily modal."""
+    ordered = sorted(items, key=lambda i: sort_key(i, today))
+
     sections: list[dict] = [
         {"key": key, "title": title, "rows": []} for key, title in _SECTIONS
     ]
-    index = {section["key"]: section for section in sections}
+    section_index = {section["key"]: section for section in sections}
 
-    for item in sorted(items, key=lambda i: sort_key(i, today)):
+    modal_groups: list[dict] = [
+        {"key": key, "title": title, "items": []} for key, title in _MODAL_GROUPS
+    ]
+    modal_index = {group["key"]: group for group in modal_groups}
+
+    for item in ordered:
         status = derive_status(item, today)
         remaining = days_left(item, today)
-        key = "out" if status is Status.OUT_OF_STOCK else item.category.value
-        index[key]["rows"].append(
+        color = status_color(status, remaining)
+
+        section_key = "out" if status is Status.OUT_OF_STOCK else item.category.value
+        section_index[section_key]["rows"].append(
             {
                 "item": item,
-                "color": status_color(status, remaining),
+                "color": color,
                 "is_to_buy": status is Status.TO_BUY,
                 "days_label": _days_label(remaining),
             }
         )
 
+        group_key = _modal_group_key(status)
+        if group_key is not None:
+            modal_index[group_key]["items"].append({"name": item.name, "color": color})
+
     return {
         "sections": sections,
+        "modal_groups": modal_groups,
         "poll_interval_s": settings.POLL_INTERVAL_S,
     }
 
@@ -81,3 +113,9 @@ def dashboard_body(request: Request, db: Session = Depends(get_db)) -> HTMLRespo
         name="partials/dashboard_body.html",
         context=_build_context(items, date.today()),
     )
+
+
+@router.post("/modal/dismiss", response_class=HTMLResponse)
+def dismiss_modal() -> HTMLResponse:
+    """Remove the daily modal in place — HTMX swaps in the empty fragment."""
+    return HTMLResponse("")

@@ -1,4 +1,5 @@
-/* Reset only — visual tokens arrive in Unit 12. */
+/* Reset + design tokens. The full visual layer (rows, header, responsive)
+   arrives in Unit 12; the modal styles here already use ui-context.md tokens. */
 
 *,
 *::before,
@@ -8,6 +9,39 @@
   padding: 0;
 }
 
+:root {
+  /* Neutrals */
+  --bg:            #F7F6F3;  /* page background */
+  --surface:       #FFFFFF;  /* rows, cards, modal */
+  --surface-alt:   #EFEDE8;  /* section headers, hover */
+  --border:        #E2DFD9;  /* hairline separators */
+  --text:          #1A1815;  /* primary text */
+  --text-muted:    #6B675F;  /* dates, counts, meta */
+  --backdrop:      rgba(26, 24, 21, 0.45);  /* dimmed modal backdrop */
+  --shadow:        0 12px 32px rgba(0, 0, 0, 0.2);  /* modal lift */
+
+  /* Semantic status — background / border / text triples */
+  --green-bg:      #E8F5E9;  --green-border: #2E7D32;  --green-text: #1B5E20;
+  --yellow-bg:     #FFF8E1;  --yellow-border:#F9A825;  --yellow-text:#7A5B00;
+  --red-bg:        #FDECEA;  --red-border:   #C62828;  --red-text:   #7F1D1D;
+  --purple-bg:     #F3E5F5;  --purple-border:#7B1FA2;  --purple-text:#4A148C;
+
+  /* Out-of-stock: solid dark flashing red (white text) */
+  --out-bg:        #8C1D1D;
+  --out-text:      #FFFFFF;
+
+  /* Actions */
+  --accent:        #1B6EF3;  /* primary button (Add) */
+  --accent-hover:  #155ACB;
+  --danger:        #C62828;  /* destructive hover */
+  --focus-ring:    #1B6EF3;
+
+  /* Border radius */
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+}
+
 html {
   -webkit-text-size-adjust: 100%;
 }
@@ -15,4 +49,110 @@ html {
 body {
   font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   line-height: 1.5;
+  color: var(--text);
+  background: var(--bg);
+}
+
+/* --- Daily notification modal --- */
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem;
+  background: var(--backdrop);
+  z-index: 100;
+}
+
+.modal {
+  width: 100%;
+  max-width: 460px;
+  max-height: 80vh;
+  overflow-y: auto;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow);
+}
+
+.modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.25rem;
+  border-bottom: 1px solid var(--border);
+}
+
+.modal__title {
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.modal__close {
+  border: none;
+  background: transparent;
+  padding: 0.25rem 0.5rem;
+  border-radius: var(--radius-sm);
+  color: var(--text-muted);
+  font-size: 1.5rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.modal__close:hover {
+  color: var(--danger);
+}
+
+.modal__close:focus-visible {
+  outline: 2px solid var(--focus-ring);
+  outline-offset: 2px;
+}
+
+.modal__body {
+  padding: 1rem 1.25rem 1.25rem;
+}
+
+.modal-group + .modal-group {
+  margin-top: 1rem;
+}
+
+.modal-group__title {
+  margin-bottom: 0.375rem;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.modal-group__list {
+  list-style: none;
+}
+
+.modal-group__item {
+  padding: 0.375rem 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.modal-group__item:last-child {
+  border-bottom: none;
+}
+
+.modal-group__item--red {
+  color: var(--red-text);
+}
+
+.modal-group__item--yellow {
+  color: var(--yellow-text);
+}
+
+.modal-group__item--purple {
+  color: var(--purple-text);
+}
+
+.modal-group__empty {
+  color: var(--text-muted);
+  font-size: 0.875rem;
 }
